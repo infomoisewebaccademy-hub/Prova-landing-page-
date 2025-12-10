@@ -31,7 +31,10 @@ const DEFAULT_CONFIG: LandingPageConfig = {
     benefits: [
         "Accesso a vita ai contenuti",
         "Assistenza 7 giorni su 7",
-        "Nessuna esperienza richiesta"
+        "Nessuna esperienza richiesta",
+        "Accesso alla community",
+        "Supporto PERSONALE diretto su whatsapp",
+        "Soddisfatto o rimborsato in 30 giorni"
     ],
     show_badges: true
   },
@@ -353,7 +356,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
   const brandTitle = "Moise Web Academy";
 
   return (
-    <div className="flex flex-col min-h-screen font-sans">
+    <div className="flex flex-col min-h-screen font-sans antialiased text-slate-900">
       
       {/* ANNOUNCEMENT BAR */}
       {config.announcement_bar.is_visible && (
@@ -376,7 +379,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                 }
             `}</style>
 
-            <div className={`py-3 px-4 font-bold text-center text-sm md:text-base ${config.announcement_bar.type === 'marquee' ? 'whitespace-nowrap overflow-hidden' : ''}`}>
+            <div className={`py-3 px-4 font-medium text-center text-sm md:text-base ${config.announcement_bar.type === 'marquee' ? 'whitespace-nowrap overflow-hidden' : ''}`}>
                 {config.announcement_bar.type === 'marquee' ? (
                      <div className="animate-marquee w-full">
                          <span className="mx-8">{config.announcement_bar.text}</span>
@@ -420,7 +423,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                     Zero Abbonamenti • Zero Crediti AI • Zero Tool a Pagamento
                     </div>
                 )}
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight mb-6 leading-tight">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
                   {config.hero.title}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-purple-400 block mt-2">
                     {config.hero.subtitle}
@@ -429,7 +432,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
                 {/* TESTO PERSONALIZZABILE */}
                 {config.hero.text && (
-                    <p className="mt-6 max-w-2xl mx-auto text-lg md:text-xl text-slate-300 leading-relaxed mb-8 whitespace-pre-wrap">
+                    <p className="mt-6 max-w-2xl mx-auto text-lg md:text-xl text-slate-300 leading-relaxed mb-8 whitespace-pre-wrap font-medium">
                         {config.hero.text}
                     </p>
                 )}
@@ -475,7 +478,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                           <span className="inline-block py-1 px-3 rounded-full bg-brand-900/50 border border-brand-500/30 text-brand-300 font-bold tracking-widest text-xs uppercase mb-6 backdrop-blur-sm">
                               {config.ai_era_section?.subtitle}
                           </span>
-                          <h2 className="text-4xl md:text-6xl font-black text-white mb-8 tracking-tight leading-tight">
+                          <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 tracking-tight leading-tight">
                               {config.ai_era_section?.title}
                           </h2>
                       </div>
@@ -508,13 +511,13 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
       {/* SECTION 1 - About / Mission */}
       {config.about_section.is_visible && (
-        <section className="py-24 bg-slate-50 relative overflow-hidden border-t border-slate-100">
+        <section className="py-16 md:py-24 bg-slate-50 relative overflow-hidden border-t border-slate-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div className="flex flex-col lg:flex-row gap-16 items-start">
+                <div className="flex flex-col lg:flex-row gap-12 md:gap-16 items-start">
                     
                     {/* LEFT COLUMN: Image & Quote Card */}
                     <div className="w-full lg:w-1/2 relative">
-                        <div className="relative rounded-3xl overflow-hidden h-[600px] w-full shadow-lg">
+                        <div className="relative rounded-3xl overflow-hidden h-[500px] md:h-[600px] w-full shadow-lg">
                             <img 
                                 src={config.about_section.image_url} 
                                 alt="About Us" 
@@ -548,7 +551,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                                     )}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black text-slate-900 uppercase tracking-wider">{config.about_section.quote_author}</p>
+                                    <p className="text-sm font-bold text-slate-900 uppercase tracking-wider">{config.about_section.quote_author}</p>
                                     <p className="text-xs text-slate-500 font-medium">Founder, Moise Web Academy</p>
                                 </div>
                             </div>
@@ -561,7 +564,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                             <span className="w-1.5 h-1.5 rounded-full bg-brand-600 mr-2"></span>
                             {config.about_section.subtitle}
                         </div>
-                        <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-8 leading-[1.1] tracking-tight">
+                        <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-8 leading-[1.1] tracking-tight">
                             {preTitle}
                             <span className="text-brand-600 block">{brandTitle}</span>
                         </h2>
@@ -588,7 +591,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                         <div className="flex gap-4 items-start pl-0">
                             <div className="w-1 self-stretch bg-brand-600 rounded-full"></div>
                             <div>
-                                <h4 className="text-xl font-black text-slate-900 mb-2">Noi facciamo l’opposto.</h4>
+                                <h4 className="text-xl font-bold text-slate-900 mb-2">Noi facciamo l’opposto.</h4>
                                 <p className="text-slate-600 leading-relaxed">
                                     In questa Academy vi insegniamo a creare tutto ciò che serve nel digitale usando strumenti a <strong>costo zero</strong>. Non pagate abbonamenti. Non servono crediti AI. Zero spese nascoste.
                                 </p>
@@ -602,22 +605,22 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
       {/* SECTION 2 - Features Grid + COURSES PREVIEW */}
       {config.features_section.is_visible && (
-          <section className="py-24 bg-white">
+          <section className="py-16 md:py-20 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-20">
-                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">{config.features_section.title}</h2>
+                <div className="text-center max-w-3xl mx-auto mb-12">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 tracking-tight">{config.features_section.title}</h2>
                     <p className="text-xl text-slate-500">{config.features_section.subtitle}</p>
                 </div>
 
                 {/* FEATURES CARDS */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
                     {config.features_section.cards.map((card, idx) => {
                         const IconComponent = IconMap[card.icon] || Star;
                         const colorTheme = CARD_COLORS[idx % CARD_COLORS.length];
                         const featuresList = card.desc.split('\n').filter(s => s.trim() !== '');
 
                         return (
-                            <div key={idx} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.12)] transition-all duration-300 h-full flex flex-col">
+                            <div key={idx} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.12)] transition-all duration-300 h-full flex flex-col">
                                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 ${colorTheme.bg}`}>
                                     <IconComponent className={`h-8 w-8 ${colorTheme.text}`} />
                                 </div>
@@ -639,10 +642,10 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                 </div>
 
                 {/* --- COURSES LIST RE-DESIGN --- */}
-                <div className="border-t border-gray-100 pt-20 pb-20 bg-white">
+                <div className="border-t border-gray-100 pt-20 pb-12 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
-                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">I Nostri Corsi Più Popolari</h2>
+                            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 tracking-tight">I Nostri Corsi Più Popolari</h2>
                             <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">
                                 Scelti da migliaia di studenti per qualità e completezza dei contenuti
                             </p>
@@ -656,7 +659,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                                 const discountPercent = Math.round(((fakeOriginalPrice - displayPrice) / fakeOriginalPrice) * 100);
 
                                 return (
-                                    <div key={course.id} className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden flex flex-col group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" onClick={() => onCourseSelect(course.id)}>
+                                    <div key={course.id} className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" onClick={() => onCourseSelect(course.id)}>
                                         
                                         {/* Image Header */}
                                         <div className="relative h-56 overflow-hidden">
@@ -730,7 +733,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                                             {/* Footer: Price & Button */}
                                             <div className="mt-auto flex items-center justify-between gap-4">
                                                 <div className="flex flex-col">
-                                                    <span className="text-3xl font-black text-brand-600">€{displayPrice}</span>
+                                                    <span className="text-3xl font-extrabold text-brand-600">€{displayPrice}</span>
                                                     <span className="text-sm text-slate-400 line-through font-medium">€{fakeOriginalPrice},00</span>
                                                 </div>
                                                 <button className="bg-brand-600 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 hover:-translate-y-0.5 active:translate-y-0">
@@ -751,11 +754,11 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
       {/* --- HOW IT WORKS --- */}
       {config.how_it_works_section?.is_visible !== false && (
-          <section className="py-24 bg-white border-t border-gray-100 relative">
+          <section className="py-16 md:py-20 bg-white border-t border-gray-100 relative">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="text-center max-w-3xl mx-auto mb-16">
                       <span className="text-brand-600 font-bold tracking-wider uppercase text-sm mb-2 block">{config.how_it_works_section?.subtitle}</span>
-                      <h2 className="text-3xl md:text-5xl font-black text-slate-900">{config.how_it_works_section?.title}</h2>
+                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900">{config.how_it_works_section?.title}</h2>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
@@ -785,10 +788,10 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
       )}
 
       {/* --- NEW SECTION (HARDCODED): PER CHI È (TARGET) --- */}
-      <section className="py-24 bg-white">
+      <section className="py-16 md:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
+              <div className="text-center mb-12">
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 tracking-tight">
                       Moise Web Academy È Perfetto Per Te Se...
                   </h2>
               </div>
@@ -826,12 +829,12 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
       </section>
 
       {/* --- NEW SECTION (HARDCODED): PER CHI NON È (FILTRO) --- */}
-      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+      <section className="py-16 md:py-20 bg-slate-900 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-red-500 opacity-5 rounded-full -mr-12 -mt-12 blur-3xl"></div>
           
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
                       Questo Corso NON È Per Te Se...
                   </h2>
                   <div className="w-24 h-1 bg-red-500 mx-auto rounded-full"></div>
@@ -869,10 +872,10 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
       {/* --- COMPARISON SECTION (BEFORE / AFTER) --- */}
       {config.comparison_section?.is_visible !== false && (
-         <section className="py-24 bg-slate-50 border-t border-slate-200">
+         <section className="py-16 md:py-20 bg-slate-50 border-t border-slate-200">
              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                  <div className="text-center max-w-4xl mx-auto mb-16">
-                     <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">{config.comparison_section?.title || "La Tua Vita Prima e Dopo Moise Web Academy"}</h2>
+                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">{config.comparison_section?.title || "La Tua Vita Prima e Dopo Moise Web Academy"}</h2>
                      <p className="text-xl text-slate-600 font-medium">
                         {config.comparison_section?.subtitle || "Non è solo un corso. È un cambio di prospettiva sulla tua autonomia e sulle tue possibilità."}
                      </p>
@@ -921,11 +924,11 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
       {/* SECTION 3 - Testimonials */}
       {config.testimonials_section.is_visible && (
-        <section className="py-24 bg-white overflow-hidden border-t border-gray-100">
+        <section className="py-16 md:py-20 bg-white overflow-hidden border-t border-gray-100">
              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <span className="text-brand-600 font-bold tracking-wider uppercase text-sm">{config.testimonials_section.subtitle}</span>
-                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 mt-2">{config.testimonials_section.title}</h2>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mt-2">{config.testimonials_section.title}</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {config.testimonials_section.reviews.map((review, idx) => (
@@ -954,7 +957,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
       {/* SECTION 4 - USP */}
       {config.usp_section.is_visible && (
-          <section className="py-20 bg-slate-50 border-t border-slate-200">
+          <section className="py-16 md:py-20 bg-slate-50 border-t border-slate-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-12 text-center">{config.usp_section.title}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1054,13 +1057,13 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
       </section>
 
       {/* SECTION - GUARANTEE (HARDCODED) */}
-      <section className="py-24 bg-white border-t border-slate-200">
+      <section className="py-16 md:py-24 bg-white border-t border-slate-200">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <div className="inline-block p-4 rounded-full bg-yellow-100 mb-6">
                   <ShieldCheck className="h-12 w-12 text-yellow-600" />
               </div>
               
-              <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
                   Garanzia Soddisfatti o Rimborsati 30 Giorni
               </h2>
               
@@ -1122,10 +1125,10 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
       </section>
 
       {/* --- SECTION FAQ (NUOVA) --- */}
-      <section className="py-24 bg-slate-50 border-t border-slate-200">
+      <section className="py-16 md:py-20 bg-slate-50 border-t border-slate-200">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
                       Domande Frequenti
                   </h2>
                   <p className="text-xl text-slate-500">
@@ -1180,11 +1183,11 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
       {/* SECTION 7 - CTA FINALE */}
       {config.cta_section.is_visible && (
-        <section className="py-24 bg-brand-600 relative overflow-hidden">
+        <section className="py-20 md:py-24 bg-brand-600 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-12 -mt-12 blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500 opacity-20 rounded-full -ml-12 -mb-12 blur-3xl"></div>
             <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-                <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
+                <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
                     {config.cta_section.title}
                 </h2>
                 <p className="text-xl md:text-2xl text-brand-100 mb-10 font-medium">

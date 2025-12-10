@@ -24,7 +24,10 @@ const DEFAULT_LANDING_CONFIG: LandingPageConfig = {
     benefits: [
         "Accesso a vita ai contenuti",
         "Assistenza 7 giorni su 7",
-        "Nessuna esperienza richiesta"
+        "Nessuna esperienza richiesta",
+        "Accesso alla community",
+        "Supporto PERSONALE diretto su whatsapp",
+        "Soddisfatto o rimborsato in 30 giorni"
     ],
     cta_primary: 'Scopri i corsi disponibili',
     cta_secondary: '', // Default vuoto
