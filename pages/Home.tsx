@@ -264,6 +264,7 @@ const FAQ_ITEMS = [
 export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landingConfig }) => {
   const navigate = useNavigate();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [showFounderStory, setShowFounderStory] = useState(false);
 
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -902,6 +903,83 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
             </div>
           </section>
       )}
+
+      {/* SECTION - FOUNDER STORY (CHI SONO) */}
+      <section className="py-12 bg-white border-t border-slate-100">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div 
+                  onClick={() => setShowFounderStory(!showFounderStory)}
+                  className="cursor-pointer bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl p-6 md:p-8 flex items-center justify-between transition-all group shadow-sm hover:shadow-md"
+              >
+                  <div className="flex items-center gap-4">
+                      <div className="h-16 w-16 rounded-full bg-brand-100 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">
+                          {/* Fallback image or initials if no image provided in config, specifically for Daniel */}
+                           <span className="font-bold text-brand-700 text-xl">DM</span>
+                      </div>
+                      <div>
+                          <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight group-hover:text-brand-600 transition-colors">
+                              CHI SONO
+                          </h2>
+                          <p className="text-slate-500 text-sm font-medium">Scopri la storia del tuo istruttore</p>
+                      </div>
+                  </div>
+                  <div className={`transform transition-transform duration-300 ${showFounderStory ? 'rotate-180' : ''}`}>
+                      <ChevronDown className="h-8 w-8 text-slate-400 group-hover:text-brand-600" />
+                  </div>
+              </div>
+
+              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showFounderStory ? 'max-h-[2000px] opacity-100 mt-8' : 'max-h-0 opacity-0'}`}>
+                  <div className="prose prose-lg text-slate-600 leading-relaxed">
+                      <p className="font-bold text-slate-900 text-xl mb-6">
+                          Ciao, sono Daniel Moise, fondatore di Moise Web Academy.
+                      </p>
+                      <p className="mb-4">
+                          Da diversi anni aiuto persone e aziende a portare i loro progetti online. Ho creato decine di siti web per clienti in tutta Italia, dall'e-commerce per un brand di moda al gestionale personalizzato per un AUTOFFICINA
+                      </p>
+                      <p className="mb-4">
+                          Quando ho scoperto il potenziale dell'intelligenza artificiale per la creazione di siti web, ho capito subito che era una rivoluzione totale.
+                      </p>
+                      <p className="mb-4 font-medium text-slate-800">
+                          Quello che prima mi richiedeva giorni o settimane di lavoro, ora lo faccio in poche ore. E soprattutto: senza scrivere codice.
+                      </p>
+                      <p className="mb-4">
+                          Ma c'era un problema.
+                      </p>
+                      <p className="mb-4">
+                          Tutte le risorse erano in inglese, frammentate su mille piattaforme diverse, troppo tecniche per chi partiva da zero.
+                      </p>
+                      <p className="mb-8">
+                          Così ho deciso di creare Moise Web Academy: il primo corso in italiano completo, passo-passo, che insegna a chiunque - anche senza alcuna esperienza - a creare siti web professionali usando l'intelligenza artificiale.
+                      </p>
+
+                      <div className="bg-brand-50 border-l-4 border-brand-500 p-6 rounded-r-xl mb-8">
+                          <h3 className="flex items-center text-xl font-bold text-brand-800 mb-2">
+                              <span className="text-2xl mr-2">🎯</span> La mia missione?
+                          </h3>
+                          <p className="text-brand-900">
+                              Democratizzare la creazione web. Renderti autonomo. Darti una competenza ad alto valore che può cambiare concretamente la tua vita, sia che tu voglia risparmiare migliaia di euro per la tua attività, sia che tu voglia creare un business online da zero.
+                          </p>
+                      </div>
+
+                      <div className="mt-8 pt-8 border-t border-slate-200">
+                          <p className="mb-4">
+                              Se sei arrivato fin qui, significa che sei pronto per il prossimo passo.
+                          </p>
+                          <p className="mb-4">
+                              Non serve esperienza. Non serve saper programmare.
+                              <br/>Serve solo la voglia di imparare e mettersi in gioco.
+                          </p>
+                          <p className="font-bold text-slate-900 text-xl">
+                              Ci vediamo dentro il corso! 👊
+                          </p>
+                          <p className="text-slate-500 italic mt-2">
+                              — Daniel
+                          </p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
 
       {/* SECTION - GUARANTEE (HARDCODED) */}
       <section className="py-24 bg-white border-t border-slate-200">
