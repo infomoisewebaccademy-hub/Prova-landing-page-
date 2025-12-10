@@ -1,7 +1,7 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Course, UserProfile, LandingPageConfig } from '../types';
-import { CheckCircle, ArrowRight, ShieldCheck, Zap, Database, Layout, Target, Cpu, Layers, Users, Lock, Quote, Star, Award, Smartphone, MessageCircle, CheckCircle2, X, PlayCircle, BookOpen, MapPin, Phone, Mail, Facebook, Instagram, Linkedin, Youtube, CreditCard, Check, XCircle, Banknote, Rocket, TrendingUp, UserCheck, AlertTriangle } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, Zap, Database, Layout, Target, Cpu, Layers, Users, Lock, Quote, Star, Award, Smartphone, MessageCircle, CheckCircle2, X, PlayCircle, BookOpen, MapPin, Phone, Mail, Facebook, Instagram, Linkedin, Youtube, CreditCard, Check, XCircle, Banknote, Rocket, TrendingUp, UserCheck, AlertTriangle, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface HomeProps {
@@ -186,8 +186,88 @@ const CARD_COLORS = [
     { bg: 'bg-pink-50', text: 'text-pink-600' },
 ];
 
+const FAQ_ITEMS = [
+    {
+        q: "Devo avere competenze tecniche o di programmazione?",
+        a: "Assolutamente NO. Il corso è pensato per chi parte da zero assoluto. Se sai usare WhatsApp, Google e guardare un video su YouTube, sei già pronto. Non serve sapere nulla di codice, HTML, CSS o programmazione."
+    },
+    {
+        q: "Quanto tempo serve per completare il corso?",
+        a: "Il corso base si completa in 3-5 ore. Il premium in 8-10 ore totali. Ma puoi andare completamente al tuo ritmo: hai accesso illimitato a vita, quindi puoi seguirlo in una settimana o in due mesi. Tu decidi."
+    },
+    {
+        q: "Quanto tempo ci vuole per creare un sito dopo il corso?",
+        a: "Dopo aver seguito il corso base, puoi creare un sito professionale in 3-5 ore. Con la pratica e l'esperienza, scendi a 1-2 ore per sito. I nostri studenti più veloci creano landing page in 30-45 minuti."
+    },
+    {
+        q: "Quali strumenti servono? Ci sono costi aggiuntivi?",
+        a: "Ti serve solo un computer (Windows, Mac o Linux) e una connessione internet. Gli strumenti AI che usiamo (AI Studio Gemini) sono gratuiti o hanno piani free molto generosi. L'unico costo ricorrente è il dominio personalizzato (circa €10-15 all'anno), che è completamente opzionale."
+    },
+    {
+        q: "L'hosting è davvero gratuito?",
+        a: "Sì! Ti insegniamo a usare soluzioni di hosting gratuite professionali con performance eccellenti. Zero costi mensili, zero sorprese. Ovviamente se in futuro vorrai passare a hosting premium potrai farlo, ma non è necessario per iniziare."
+    },
+    {
+        q: "Posso davvero guadagnare creando siti per clienti?",
+        a: "Assolutamente sì. Un sito vetrina base si vende da €800 a €3.000. Un e-commerce completo da €2.000 a €10.000. Un gestionale personalizzato anche oltre. La domanda è altissima (ogni attività ha bisogno di presenza online) e chi sa creare siti professionali velocemente è molto ricercato."
+    },
+    {
+        q: "Come trovo i clienti?",
+        a: "Nel corso Premium ti diamo script pronti per contattare attività locali (ristoranti, hotel, professionisti, negozi, palestre). Puoi iniziare anche da conoscenti e passaparola. Molti nostri studenti trovano i primi clienti semplicemente guardandosi intorno nella propria città: quante attività hanno siti vecchi o inesistenti?"
+    },
+    {
+        q: "Per quanto tempo ho accesso al corso?",
+        a: "Per sempre. Accesso illimitato a vita. Anche se tra 5 anni vuoi rivedere una lezione, sarà ancora lì. E riceverai GRATIS tutti gli aggiornamenti futuri quando aggiungiamo nuovi contenuti o funzionalità."
+    },
+    {
+        q: "C'è supporto se ho problemi o domande?",
+        a: "Sì! Assistenza 7 giorni su 7 via chat per qualsiasi dubbio tecnico o domanda. Nel corso Premium hai anche assistenza PRIORITARIA (rispondiamo entro 2 ore) + sessioni 1-a-1 con Daniel per analizzare i tuoi progetti."
+    },
+    {
+        q: "Cosa succede se l'AI cambia o viene aggiornata?",
+        a: "Aggiorniamo costantemente il corso con le ultime novità e strumenti AI. Quando escono nuove funzionalità o miglioramenti, aggiungiamo lezioni gratuite. Il tuo accesso include TUTTI gli aggiornamenti futuri senza costi extra."
+    },
+    {
+        q: "Il corso va bene anche per creare il sito della MIA attività?",
+        a: "Assolutamente sì! Anzi, è uno dei casi d'uso principali. Risparmi migliaia di euro (che avresti dato a un'agenzia) e resti autonomo per sempre. Ogni volta che vuoi modificare qualcosa, lo fai tu in pochi minuti. Zero dipendenze."
+    },
+    {
+        q: "E se non ho tempo ora? Posso iniziare dopo?",
+        a: "Certamente! Una volta iscritto hai accesso a vita. Puoi iniziare domani, tra una settimana o tra un mese. Il corso sarà sempre lì ad aspettarti. Ma ricorda: i bonus per i primi 50 iscritti scadono, quindi iscriviti ora per non perderli."
+    },
+    {
+        q: "Il corso è registrato o sono lezioni live?",
+        a: "Tutto registrato e sempre disponibile. Massima flessibilità: segui quando vuoi, metti in pausa, rivedi le parti che ti servono 10 volte se necessario. Nessun vincolo di orario o giorno."
+    },
+    {
+        q: "Funziona anche per creare app mobile?",
+        a: "Il corso si concentra su siti web professionali (che comunque sono responsive e funzionano perfettamente su mobile). Per app native iOS/Android servirebbero competenze diverse. Ma i siti web moderni sono così potenti che spesso sostituiscono benissimo le app."
+    },
+    {
+        q: "Che differenza c'è tra Base e Premium?",
+        a: "Base (€50): Perfetto per siti vetrina, landing page, siti aziendali. Ideale se vuoi iniziare o creare il tuo sito personale/aziendale. Premium (€100): Include TUTTO del Base + e-commerce, CRM, gestionali, area membri, automazioni avanzate. Per chi vuole offrire servizi premium e guadagnare di più."
+    },
+    {
+        q: "Posso passare da Base a Premium dopo?",
+        a: "Sì, puoi fare upgrade in qualsiasi momento pagando la differenza. Ma i bonus esclusivi (sessioni 1-a-1, template, script) sono solo per chi si iscrive ora nei primi 50 posti."
+    },
+    {
+        q: "C'è una garanzia?",
+        a: "Sì! Garanzia Soddisfatti o Rimborsati di 30 giorni. Se non sei soddisfatto per qualsiasi motivo, ti rimborsiamo il 100%. Nessuna domanda, nessuna giustificazione. Zero rischi per te."
+    },
+    {
+        q: "Il corso è adatto anche a persone over 50?",
+        a: "Assolutamente sì! Abbiamo studenti di tutte le età. L'unico requisito è saper usare un computer base. Se riesci a guardare video su YouTube e scrivere su WhatsApp, sei già pronto. Daniel spiega tutto passo-passo, senza dare nulla per scontato."
+    }
+];
+
 export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landingConfig }) => {
   const navigate = useNavigate();
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  const toggleFaq = (index: number) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
 
   // Merge config with defaults
   const config = useMemo(() => {
@@ -823,7 +903,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
           </section>
       )}
 
-      {/* SECTION - GUARANTEE (HARDCODED) - NUOVA SEZIONE INSERITA */}
+      {/* SECTION - GUARANTEE (HARDCODED) */}
       <section className="py-24 bg-white border-t border-slate-200">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <div className="inline-block p-4 rounded-full bg-yellow-100 mb-6">
@@ -888,6 +968,63 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
               >
                   ACCEDI ORA <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </button>
+          </div>
+      </section>
+
+      {/* --- SECTION FAQ (NUOVA) --- */}
+      <section className="py-24 bg-slate-50 border-t border-slate-200">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-16">
+                  <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+                      Domande Frequenti
+                  </h2>
+                  <p className="text-xl text-slate-500">
+                      Tutte le risposte che cerchi prima di iniziare
+                  </p>
+              </div>
+
+              <div className="space-y-4">
+                  {FAQ_ITEMS.map((item, idx) => (
+                      <div 
+                          key={idx} 
+                          className="bg-white border border-slate-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md"
+                      >
+                          <button 
+                              onClick={() => toggleFaq(idx)}
+                              className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+                          >
+                              <div className="flex items-start gap-4">
+                                  <span className="text-2xl flex-shrink-0 select-none">❓</span>
+                                  <span className={`text-lg font-bold ${openFaqIndex === idx ? 'text-brand-600' : 'text-slate-800'}`}>
+                                      {item.q}
+                                  </span>
+                              </div>
+                              {openFaqIndex === idx ? (
+                                  <ChevronUp className="h-5 w-5 text-brand-500 flex-shrink-0 ml-4" />
+                              ) : (
+                                  <ChevronDown className="h-5 w-5 text-slate-400 flex-shrink-0 ml-4" />
+                              )}
+                          </button>
+                          
+                          {openFaqIndex === idx && (
+                              <div className="px-6 pb-6 pl-16">
+                                  <div className="text-slate-600 text-lg leading-relaxed border-l-2 border-brand-100 pl-4">
+                                      {item.a}
+                                  </div>
+                              </div>
+                          )}
+                      </div>
+                  ))}
+              </div>
+
+              <div className="mt-16 text-center">
+                  <button 
+                      onClick={handleNavigateToCourses}
+                      className="bg-brand-600 text-white px-10 py-5 rounded-xl font-bold text-xl hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/30 inline-flex items-center group transform hover:scale-105"
+                  >
+                      Ho Capito, Voglio Iniziare Ora →
+                  </button>
+              </div>
           </div>
       </section>
 
