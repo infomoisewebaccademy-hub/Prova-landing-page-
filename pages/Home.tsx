@@ -362,8 +362,8 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
   const isSticky = config.announcement_bar.is_visible && config.announcement_bar.is_sticky;
   const heroPaddingClass = (config.announcement_bar.is_visible && !isSticky) 
-    ? 'pt-20 lg:pt-32' 
-    : 'pt-24 lg:pt-32';
+    ? 'pt-32 lg:pt-40' 
+    : 'pt-36 lg:pt-48';
 
   const titleParts = config.about_section.title.split("Moise Web Academy");
   const preTitle = titleParts[0] || "Perché nasce ";
