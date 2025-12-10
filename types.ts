@@ -145,7 +145,13 @@ export interface LandingPageConfig {
     title: string;
     subtitle: string;
     is_visible: boolean;
-    reviews: Array<{ name: string; role: string; text: string; avatar?: string }>;
+    reviews: Array<{ 
+        name: string; 
+        role: string; 
+        text: string; 
+        avatar?: string;
+        attachmentUrl?: string; // NUOVO: URL Immagine o Video allegato alla recensione
+    }>;
   };
   usp_section: {
     title: string;
