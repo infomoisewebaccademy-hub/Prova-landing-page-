@@ -1,7 +1,7 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Course, UserProfile, LandingPageConfig } from '../types';
-import { CheckCircle, ArrowRight, ShieldCheck, Zap, Database, Layout, Target, Cpu, Layers, Users, Lock, Quote, Star, Award, Smartphone, MessageCircle, CheckCircle2, X, PlayCircle, BookOpen, MapPin, Phone, Mail, Facebook, Instagram, Linkedin, Youtube, CreditCard, Check, XCircle, Banknote, Rocket, TrendingUp, UserCheck, AlertTriangle, ChevronDown, ChevronUp, HelpCircle, Clock, Video, Image, Upload, Sparkles, Monitor } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, Zap, Database, Layout, Target, Cpu, Layers, Users, Lock, Quote, Star, Award, Smartphone, MessageCircle, CheckCircle2, X, PlayCircle, BookOpen, MapPin, Phone, Mail, Facebook, Instagram, Linkedin, Youtube, CreditCard, Check, XCircle, Banknote, Rocket, TrendingUp, UserCheck, AlertTriangle, ChevronDown, ChevronUp, HelpCircle, Clock, Video, Image, Upload, Sparkles, Monitor, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface HomeProps {
@@ -11,6 +11,121 @@ interface HomeProps {
   // Riceviamo l'intera configurazione
   landingConfig?: LandingPageConfig;
 }
+
+// --- COMPONENTI INTERNI OTTIMIZZATI ---
+
+const WebsiteCard: React.FC<{ url: string }> = ({ url }) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [isActive, setIsActive] = useState(false);
+    const [isHoverSupported, setIsHoverSupported] = useState(true);
+    const cardRef = useRef<HTMLDivElement>(null);
+
+    // 1. Rilevamento Device (Touch vs Mouse)
+    useEffect(() => {
+        const match = window.matchMedia('(hover: hover)');
+        setIsHoverSupported(match.matches);
+        
+        const handler = (e: MediaQueryListEvent) => setIsHoverSupported(e.matches);
+        match.addEventListener('change', handler);
+        return () => match.removeEventListener('change', handler);
+    }, []);
+
+    // 2. Intersection Observer per Mobile (Scroll quando in viewport)
+    useEffect(() => {
+        if (isHoverSupported) return; // Su desktop gestiamo con hover
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsActive(entry.isIntersecting);
+            },
+            { threshold: 0.6 } // Attiva quando il 60% della card è visibile
+        );
+
+        if (cardRef.current) {
+            observer.observe(cardRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [isHoverSupported]);
+
+    // Gestori Mouse per Desktop
+    const handleMouseEnter = () => {
+        if (isHoverSupported) setIsActive(true);
+    };
+
+    const handleMouseLeave = () => {
+        if (isHoverSupported) setIsActive(false);
+    };
+
+    return (
+        <div 
+            ref={cardRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="w-[280px] h-[180px] sm:w-[400px] sm:h-[250px] mx-3 sm:mx-4 relative group flex-shrink-0 perspective-1000 cursor-default"
+        >
+            <div className="absolute inset-0 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:border-brand-500/50 hover:shadow-brand-500/10">
+                
+                {/* Browser Bar (Mac Style) */}
+                <div className="h-6 bg-slate-900 border-b border-white/5 flex items-center px-3 gap-1.5 z-20 relative">
+                    <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
+                    <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
+                    <div className="w-2 h-2 rounded-full bg-green-500/50"></div>
+                    <div className="ml-2 w-full h-3 bg-slate-800 rounded-full opacity-30 flex items-center">
+                         <div className={`w-1 h-1 rounded-full ml-auto mr-1 ${isActive ? 'bg-green-500 animate-pulse' : 'bg-slate-600'}`}></div>
+                    </div>
+                </div>
+
+                {/* Viewport Container */}
+                <div className="w-full h-full relative bg-slate-900">
+                    
+                    {/* Skeleton Loader */}
+                    {isLoading && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800 z-10 animate-pulse">
+                            <Loader2 className="h-8 w-8 text-brand-500 animate-spin mb-2" />
+                            <span className="text-xs text-slate-500 font-mono">Loading Preview...</span>
+                        </div>
+                    )}
+
+                    {/* Overlay interazione (Link esterno) */}
+                    <a 
+                        href={url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="absolute inset-0 z-30 cursor-pointer block" 
+                        title="Apri sito reale"
+                    ></a>
+                    
+                    {/* Wrapper Desktop Simulato (1280px width) */}
+                    {/* Scaliamo il contenuto per adattarlo alla card piccola */}
+                    <div className="w-[1280px] h-[800px] origin-top-left absolute top-0 left-0 bg-white transform scale-[0.218] sm:scale-[0.3125]"> 
+                        
+                        {/* 
+                           SCROLLING CONTAINER 
+                           Altezza 400% per simulare una pagina lunga.
+                           TranslateY sposta il contenuto dal 0% fino alla fine (meno l'altezza del viewport).
+                        */}
+                        <div 
+                            className="w-full h-[400%] transition-transform duration-[20000ms] ease-linear will-change-transform"
+                            style={{ 
+                                transform: isActive ? 'translateY(calc(-100% + 800px))' : 'translateY(0)' 
+                            }}
+                        >
+                            <iframe 
+                                src={url} 
+                                className="w-full h-full border-none pointer-events-none"
+                                loading="lazy"
+                                scrolling="no"
+                                onLoad={() => setIsLoading(false)}
+                                title="Live Preview"
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // DEFAULT CONFIGURATION (Contenuto esatto dell'immagine)
 const DEFAULT_CONFIG: LandingPageConfig = {
@@ -877,37 +992,13 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
               {/* Scrolling Carousel of Live Previews */}
               <div className="w-full relative">
-                  <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none"></div>
-                  <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none"></div>
+                  <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-32 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none"></div>
+                  <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-32 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none"></div>
                   
                   <div className="flex animate-marquee-scroll w-fit">
                       {/* Duplichiamo la lista per l'effetto infinito */}
                       {[...(config.ai_showcase_section?.urls || []), ...(config.ai_showcase_section?.urls || [])].map((url, idx) => (
-                          <div key={idx} className="w-[400px] h-[250px] mx-4 relative group flex-shrink-0">
-                              <div className="absolute inset-0 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-2xl transition-transform duration-300 group-hover:scale-105 group-hover:border-brand-500/50">
-                                  {/* Browser Bar */}
-                                  <div className="h-6 bg-slate-900 border-b border-white/5 flex items-center px-3 gap-1.5">
-                                      <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
-                                      <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
-                                      <div className="w-2 h-2 rounded-full bg-green-500/50"></div>
-                                  </div>
-                                  {/* Iframe Preview Container */}
-                                  <div className="w-full h-full relative bg-white">
-                                      {/* Overlay trasparente per evitare interazioni scroll indesiderate */}
-                                      <a href={url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-20 cursor-pointer block" title="Apri anteprima sito"></a>
-                                      
-                                      {/* Scaled Iframe */}
-                                      <div className="w-[1600px] h-[1000px] origin-top-left transform scale-25">
-                                          <iframe 
-                                              src={url} 
-                                              className="w-full h-full border-none pointer-events-none"
-                                              loading="lazy"
-                                              title={`Preview ${idx}`}
-                                          ></iframe>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
+                          <WebsiteCard key={`${url}-${idx}`} url={url} />
                       ))}
                   </div>
               </div>
