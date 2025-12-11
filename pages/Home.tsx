@@ -1041,30 +1041,27 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                           </div>
                       </div>
 
-                      {/* Right Mockup area - using a glass card representation */}
+                      {/* Right Video area - replaced Mockup with Video Component */}
                       <div className="lg:col-span-7">
-                          <div className="relative">
-                              <div className="absolute inset-0 -m-8 bg-brand-500/10 rounded-full blur-3xl opacity-20"></div>
-                              <div className="bg-black/40 backdrop-blur-xl ring-1 ring-white/10 rounded-3xl p-2 overflow-hidden shadow-2xl">
-                                  <div className="bg-slate-900 rounded-2xl border border-white/5 p-8 h-[500px] flex items-center justify-center relative overflow-hidden">
-                                       {/* Mock UI Elements */}
-                                       <div className="absolute inset-0 grid grid-cols-2 gap-4 p-4 opacity-50">
-                                           <div className="bg-white/5 rounded-xl h-full animate-pulse"></div>
-                                           <div className="grid grid-rows-3 gap-4 h-full">
-                                               <div className="bg-white/5 rounded-xl h-full"></div>
-                                               <div className="bg-white/5 rounded-xl h-full"></div>
-                                               <div className="bg-brand-500/10 rounded-xl h-full border border-brand-500/20"></div>
-                                           </div>
+                          <div className="relative h-full min-h-[400px] rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+                               <video 
+                                  src="https://res.cloudinary.com/dhj0ztos6/video/upload/v1765456382/come-funziona-MWA_mpdave.webm"
+                                  autoPlay loop muted playsInline 
+                                  className="absolute inset-0 w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity duration-700"
+                               />
+                               {/* Gradient Overlay on Video */}
+                               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                               <div className="absolute bottom-2 left-3 right-3">
+                                   <div className="bg-black/60 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                                       <div className="flex items-center gap-3 mb-2">
+                                           <div className="h-2 w-2 rounded-full bg-brand-400 animate-pulse"></div>
+                                           <span className="text-xs text-brand-400 font-mono uppercase">IL TUO SUCCESSO</span>
                                        </div>
-                                       <div className="relative z-10 text-center">
-                                           <div className="h-20 w-20 bg-brand-500 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand-500/30">
-                                               <Rocket className="h-10 w-10 text-white" />
-                                           </div>
-                                           <h3 className="text-2xl font-bold text-white mb-2">Risultato Garantito</h3>
-                                           <p className="text-slate-400">Dall'idea al progetto online in poche ore.</p>
-                                       </div>
-                                  </div>
-                              </div>
+                                       <p className="text-sm text-slate-200">
+                                           Diventa un professionista ricercato.
+                                       </p>
+                                   </div>
+                               </div>
                           </div>
                       </div>
                   </div>
