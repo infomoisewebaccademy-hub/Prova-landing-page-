@@ -14,65 +14,97 @@ interface HomeProps {
 
 // --- COMPONENTI INTERNI OTTIMIZZATI ---
 
-const WebsiteCard: React.FC<{ url: string }> = ({ url }) => {
+const WebsiteCard: React.FC<{ url: string; index: number }> = ({ url, index }) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [isActive, setIsActive] = useState(false);
-    const [isHoverSupported, setIsHoverSupported] = useState(true);
-    const cardRef = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const [isInteracting, setIsInteracting] = useState(false); // Hover or Touch
+    
+    const containerRef = useRef<HTMLDivElement>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const animationRef = useRef<number>(0);
+    
+    // Configurazione Direzione: 
+    // index pari (0, 2...) => Parte dall'alto, scorre GIÙ (1)
+    // index dispari (1, 3...) => Parte dal basso, scorre SU (-1)
+    const directionRef = useRef<number>(index % 2 === 0 ? 1 : -1);
+    const speed = 0.6; // Velocità in px per frame (60fps)
 
-    // 1. Rilevamento Device (Touch vs Mouse)
+    // 1. Intersection Observer (Ottimizzazione Performance)
     useEffect(() => {
-        const match = window.matchMedia('(hover: hover)');
-        setIsHoverSupported(match.matches);
-        
-        const handler = (e: MediaQueryListEvent) => setIsHoverSupported(e.matches);
-        match.addEventListener('change', handler);
-        return () => match.removeEventListener('change', handler);
-    }, []);
-
-    // 2. Intersection Observer per Mobile (Scroll quando in viewport)
-    useEffect(() => {
-        if (isHoverSupported) return; // Su desktop gestiamo con hover
-
         const observer = new IntersectionObserver(
             ([entry]) => {
-                setIsActive(entry.isIntersecting);
+                setIsVisible(entry.isIntersecting);
             },
-            { threshold: 0.6 } // Attiva quando il 60% della card è visibile
+            { threshold: 0.1 } 
         );
 
-        if (cardRef.current) {
-            observer.observe(cardRef.current);
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
         }
 
         return () => observer.disconnect();
-    }, [isHoverSupported]);
+    }, []);
 
-    // Gestori Mouse per Desktop
-    const handleMouseEnter = () => {
-        if (isHoverSupported) setIsActive(true);
-    };
+    // 2. Inizializzazione Posizione (Per i dispari che partono dal basso)
+    useEffect(() => {
+        if (!isLoading && scrollRef.current && index % 2 !== 0) {
+            const el = scrollRef.current;
+            // Imposta lo scroll alla fine meno l'altezza visibile
+            el.scrollTop = el.scrollHeight - el.clientHeight;
+        }
+    }, [isLoading, index]);
 
-    const handleMouseLeave = () => {
-        if (isHoverSupported) setIsActive(false);
-    };
+    // 3. Animation Loop (JS Based per controllo totale)
+    useEffect(() => {
+        const animate = () => {
+            if (isVisible && !isInteracting && !isLoading && scrollRef.current) {
+                const el = scrollRef.current;
+                const maxScroll = el.scrollHeight - el.clientHeight;
+                
+                // Calcolo nuova posizione
+                let newScrollTop = el.scrollTop + (speed * directionRef.current);
+
+                // Logica Rimbalzo / Loop
+                if (directionRef.current === 1) { // Scende
+                    if (newScrollTop >= maxScroll) {
+                        directionRef.current = -1; // Inverti verso l'alto
+                        newScrollTop = maxScroll; 
+                    }
+                } else { // Sale
+                    if (newScrollTop <= 0) {
+                        directionRef.current = 1; // Inverti verso il basso
+                        newScrollTop = 0;
+                    }
+                }
+
+                el.scrollTop = newScrollTop;
+            }
+            animationRef.current = requestAnimationFrame(animate);
+        };
+
+        animationRef.current = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(animationRef.current!);
+    }, [isVisible, isInteracting, isLoading]);
 
     return (
         <div 
-            ref={cardRef}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            className="w-[280px] h-[180px] sm:w-[400px] sm:h-[250px] mx-3 sm:mx-4 relative group flex-shrink-0 perspective-1000 cursor-default"
+            ref={containerRef}
+            className="w-[280px] h-[180px] sm:w-[400px] sm:h-[250px] mx-3 sm:mx-4 relative group flex-shrink-0 perspective-1000 cursor-grab active:cursor-grabbing"
+            onMouseEnter={() => setIsInteracting(true)}
+            onMouseLeave={() => setIsInteracting(false)}
+            onTouchStart={() => setIsInteracting(true)}
+            onTouchEnd={() => setIsInteracting(false)}
         >
             <div className="absolute inset-0 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:border-brand-500/50 hover:shadow-brand-500/10">
                 
-                {/* Browser Bar (Mac Style) */}
-                <div className="h-6 bg-slate-900 border-b border-white/5 flex items-center px-3 gap-1.5 z-20 relative">
+                {/* Browser Bar */}
+                <div className="h-6 bg-slate-900 border-b border-white/5 flex items-center px-3 gap-1.5 z-20 relative pointer-events-none">
                     <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
                     <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
                     <div className="w-2 h-2 rounded-full bg-green-500/50"></div>
-                    <div className="ml-2 w-full h-3 bg-slate-800 rounded-full opacity-30 flex items-center">
-                         <div className={`w-1 h-1 rounded-full ml-auto mr-1 ${isActive ? 'bg-green-500 animate-pulse' : 'bg-slate-600'}`}></div>
+                    <div className="ml-2 w-full h-3 bg-slate-800 rounded-full opacity-30 flex items-center justify-center">
+                         {/* Indicatore visivo di pausa */}
+                         {isInteracting && <div className="w-1 h-1 bg-brand-500 rounded-full animate-pulse"></div>}
                     </div>
                 </div>
 
@@ -81,46 +113,49 @@ const WebsiteCard: React.FC<{ url: string }> = ({ url }) => {
                     
                     {/* Skeleton Loader */}
                     {isLoading && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800 z-10 animate-pulse">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800 z-10">
                             <Loader2 className="h-8 w-8 text-brand-500 animate-spin mb-2" />
                             <span className="text-xs text-slate-500 font-mono">Loading Preview...</span>
                         </div>
                     )}
 
-                    {/* Overlay interazione (Link esterno) */}
+                    {/* Wrapper Desktop Simulato (1280px width) */}
+                    <div className="w-[1280px] h-[800px] origin-top-left absolute top-0 left-0 bg-white transform scale-[0.218] sm:scale-[0.3125] pointer-events-auto"> 
+                        
+                        {/* 
+                           SCROLLING CONTAINER REALE
+                           overflow-y-auto permette lo scroll manuale nativo.
+                           La ref 'scrollRef' viene manipolata da JS per l'autoscroll.
+                        */}
+                        <div 
+                            ref={scrollRef}
+                            className="w-full h-full overflow-y-auto scrollbar-hide scroll-smooth"
+                            style={{ scrollBehavior: isInteracting ? 'auto' : 'auto' }} // 'auto' per JS scroll immediato, 'smooth' potrebbe laggare nel loop
+                        >
+                            {/* IFRAME TALL CONTAINER */}
+                            {/* Impostiamo altezza iframe molto alta per simulare pagina lunga e permettere scroll */}
+                            <div className="w-full h-[4500px]"> 
+                                <iframe 
+                                    src={url} 
+                                    className="w-full h-full border-none pointer-events-none" // pointer-events-none sull'iframe per permettere drag sul div padre
+                                    loading="lazy"
+                                    scrolling="no"
+                                    onLoad={() => setIsLoading(false)}
+                                    title="Live Preview"
+                                ></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Overlay Trasparente per Link (Solo Header cliccabile o pulsante esterno se necessario) */}
+                    {/* Nota: Qui permettiamo l'interazione diretta col div per lo scroll manuale, quindi l'overlay totale bloccherebbe lo scroll */}
                     <a 
                         href={url} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="absolute inset-0 z-30 cursor-pointer block" 
+                        className="absolute top-0 left-0 right-0 h-8 z-30 cursor-pointer" 
                         title="Apri sito reale"
                     ></a>
-                    
-                    {/* Wrapper Desktop Simulato (1280px width) */}
-                    {/* Scaliamo il contenuto per adattarlo alla card piccola */}
-                    <div className="w-[1280px] h-[800px] origin-top-left absolute top-0 left-0 bg-white transform scale-[0.218] sm:scale-[0.3125]"> 
-                        
-                        {/* 
-                           SCROLLING CONTAINER 
-                           Altezza 400% per simulare una pagina lunga.
-                           TranslateY sposta il contenuto dal 0% fino alla fine (meno l'altezza del viewport).
-                        */}
-                        <div 
-                            className="w-full h-[400%] transition-transform duration-[20000ms] ease-linear will-change-transform"
-                            style={{ 
-                                transform: isActive ? 'translateY(calc(-100% + 800px))' : 'translateY(0)' 
-                            }}
-                        >
-                            <iframe 
-                                src={url} 
-                                className="w-full h-full border-none pointer-events-none"
-                                loading="lazy"
-                                scrolling="no"
-                                onLoad={() => setIsLoading(false)}
-                                title="Live Preview"
-                            ></iframe>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -998,7 +1033,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                   <div className="flex animate-marquee-scroll w-fit">
                       {/* Duplichiamo la lista per l'effetto infinito */}
                       {[...(config.ai_showcase_section?.urls || []), ...(config.ai_showcase_section?.urls || [])].map((url, idx) => (
-                          <WebsiteCard key={`${url}-${idx}`} url={url} />
+                          <WebsiteCard key={`${url}-${idx}`} url={url} index={idx} />
                       ))}
                   </div>
               </div>
@@ -1450,7 +1485,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
               <button 
                   onClick={handleNavigateToCourses}
-                  className="bg-brand-600 text-white px-10 py-5 rounded-xl font-bold text-xl hover:bg-brand-500 transition-all shadow-xl shadow-brand-500/20 inline-flex items-center group transform hover:scale-105"
+                  className="bg-brand-600 text-white px-10 py-5 rounded-xl font-bold text-xl hover:bg-brand-50 transition-all shadow-xl shadow-brand-500/20 inline-flex items-center group transform hover:scale-105"
               >
                   ACCEDI ORA <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </button>
