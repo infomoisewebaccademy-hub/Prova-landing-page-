@@ -8,11 +8,10 @@ interface HomeProps {
   courses: Course[];
   onCourseSelect: (courseId: string) => void;
   user?: UserProfile | null;
-  // Riceviamo l'intera configurazione
   landingConfig?: LandingPageConfig;
 }
 
-// --- COMPONENTI INTERNI OTTIMIZZATI ---
+// --- COMPONENTI INTERNI ---
 
 const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean }> = ({ url, index, isMobileView }) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -24,30 +23,22 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
     const scrollRef = useRef<HTMLDivElement>(null);
     const animationRef = useRef<number>(0);
     
-    // CONFIGURAZIONE RESPONSIVE
-    // Desktop: Simula un Laptop (1280px)
-    // Mobile: Simula uno Smartphone (375px)
     const TARGET_WIDTH = isMobileView ? 375 : 1280; 
     const VIRTUAL_HEIGHT = 5000;       
     const BASE_SPEED = 0.6;            
 
-    // Configurazione Direzione Verticale: index pari = GIÙ, dispari = SU
     const directionRef = useRef<number>(index % 2 === 0 ? 1 : -1);
 
-    // 1. Calcolo Scala Dinamico
     useEffect(() => {
         const handleResize = () => {
             if (!containerRef.current) return;
             const containerWidth = containerRef.current.clientWidth;
-            // Calcola la scala basandosi sulla larghezza del contenitore (che è la "schermo" del device simulato)
             const newScale = containerWidth / TARGET_WIDTH;
             setScale(newScale);
         };
 
         handleResize();
-        // Un piccolo delay per assicurarsi che il DOM sia pronto
         setTimeout(handleResize, 100);
-        
         window.addEventListener('resize', handleResize);
         
         const observer = new IntersectionObserver(
@@ -62,14 +53,12 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
         };
     }, [TARGET_WIDTH, isMobileView]);
 
-    // 2. Posizionamento Iniziale Scroll Verticale
     useEffect(() => {
         if (!isLoading && scrollRef.current && directionRef.current === -1) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight - scrollRef.current.clientHeight;
         }
     }, [isLoading]);
 
-    // 3. Animation Loop Verticale (Interno al sito)
     useEffect(() => {
         const animate = () => {
             if (isVisible && !isInteracting && !isLoading && scrollRef.current) {
@@ -95,7 +84,6 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
         return () => cancelAnimationFrame(animationRef.current!);
     }, [isVisible, isInteracting, isLoading]);
 
-    // Render Laptop Frame (Desktop)
     if (!isMobileView) {
         return (
             <div 
@@ -105,10 +93,7 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
                 onTouchStart={() => setIsInteracting(true)}
                 onTouchEnd={() => setIsInteracting(false)}
             >
-                {/* Laptop Top (Screen) */}
                 <div className="absolute inset-x-0 top-0 bottom-4 bg-gray-800 rounded-t-xl rounded-b-md border-[3px] border-gray-700 shadow-2xl flex flex-col overflow-hidden ring-1 ring-white/10">
-                    
-                    {/* Webcam & Bezel */}
                     <div className="h-6 bg-gray-900 flex justify-center items-center relative z-20 shrink-0">
                         <div className="w-1.5 h-1.5 bg-black rounded-full ring-1 ring-gray-700"></div>
                         <div className="absolute left-3 top-1.5 flex gap-1.5 opacity-50 hover:opacity-100 transition-opacity">
@@ -118,7 +103,6 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
                         </div>
                     </div>
 
-                    {/* Screen Container */}
                     <div ref={containerRef} className="relative flex-1 bg-white w-full overflow-hidden">
                         {isLoading && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-30">
@@ -127,7 +111,6 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
                             </div>
                         )}
                         
-                        {/* Scaled Content */}
                         <div 
                             style={{
                                 width: TARGET_WIDTH,
@@ -158,7 +141,6 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
                     </div>
                 </div>
                 
-                {/* Laptop Base (Bottom) */}
                 <div className="absolute bottom-0 inset-x-[-20px] h-4 bg-gray-300 rounded-b-xl rounded-t-sm shadow-xl flex items-center justify-center border-t border-gray-400/50 gradient-to-b from-gray-200 to-gray-400">
                     <div className="w-20 h-1.5 bg-gray-400/30 rounded-full"></div>
                 </div>
@@ -170,7 +152,6 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
         );
     }
 
-    // Render Phone Frame (Mobile)
     return (
         <div 
             ref={containerRef}
@@ -180,7 +161,6 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
             onTouchStart={() => setIsInteracting(true)}
             onTouchEnd={() => setIsInteracting(false)}
         >
-            {/* Notch */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-slate-800 rounded-b-xl z-20 flex justify-center items-center">
                 <div className="w-10 h-1 bg-slate-700 rounded-full"></div>
             </div>
@@ -229,21 +209,20 @@ const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean 
     );
 };
 
-// ... (DEFAULT_CONFIG, IconMap, FAQ_ITEMS restano invariati) ...
 const DEFAULT_CONFIG: LandingPageConfig = {
   announcement_bar: {
     text: '🎉 Offerta lancio: Tutti i corsi al 50% di sconto per i primi 100 iscritti!',
     is_visible: false,
     is_sticky: false,
     type: 'static',
-    bg_color: '#fbbf24', // Amber 400
-    text_color: '#1e3a8a' // Blue 900
+    bg_color: '#fbbf24',
+    text_color: '#1e3a8a'
   },
   hero: {
     title: "Crea Siti Web Professionali o Piattaforme con l'AI in Poche Ore",
     subtitle: 'Senza Scrivere Una Riga di Codice.',
     cta_primary: 'Scopri i corsi disponibili',
-    cta_secondary: '', // Rimosso default
+    cta_secondary: '',
     image_url: '', 
     benefits: [
         "Accesso a vita ai contenuti",
@@ -799,7 +778,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                           </div>
 
                           {/* Right Video Visual */}
-                          <div className="relative h-full min-h-[400px] rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+                          <div className="relative h-full min-h-[395px] w-[calc(100%+5px)] -ml-[2.5px] rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
                                <video 
                                   src="https://res.cloudinary.com/dhj0ztos6/video/upload/v1765328025/home_page_3_tnvnqm.webm"
                                   autoPlay loop muted playsInline 
@@ -1043,14 +1022,14 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
 
                       {/* Right Video area - replaced Mockup with Video Component */}
                       <div className="lg:col-span-7">
-                          <div className="relative h-full min-h-[400px] rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+                          <div className="relative h-full min-h-[400px] rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-2xl bg-black/20">
                                <video 
                                   src="https://res.cloudinary.com/dhj0ztos6/video/upload/v1765456382/come-funziona-MWA_mpdave.webm"
                                   autoPlay loop muted playsInline 
-                                  className="absolute inset-0 w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity duration-700"
+                                  className="absolute inset-0 w-full h-full object-contain opacity-90 hover:opacity-100 transition-opacity duration-700"
                                />
                                {/* Gradient Overlay on Video */}
-                               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
                                <div className="absolute bottom-2 left-3 right-3">
                                    <div className="bg-black/60 backdrop-blur-md p-4 rounded-xl border border-white/10">
                                        <div className="flex items-center gap-3 mb-2">
@@ -1227,7 +1206,7 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                   {[
                       { title: 'Cerchi la bacchetta magica', desc: 'L\'AI è potentissima, ma devi imparare a usarla. Se cerchi “soldi facili” senza impegno, questo corso non fa per te.' },
                       { title: 'Vuoi che qualcuno faccia tutto al posto tuo', desc: 'Ti insegniamo a creare, non creiamo noi per te. Ti diamo la canna da pesca, non il pesce.' },
-                      { title: 'Pensi che l\'AI faccia tutto da sola', desc: 'L’intelligenza artificiale va guidata con i prompt giusti. È come una Ferrari: se non sai guidare, non serve a nulla.' },
+                      { title: 'Pensi che l\'AI faccia tutto da sola', desc: 'L’intelligenza artificiale va guidata con i prompt giusti. È come avere una Ferrari: se non sai guidare, non serve a nulla.' },
                       { title: 'Vuoi diventare un programmatore "classico"', desc: 'Se il tuo sogno è scrivere migliaia di righe di codice, questo non è il percorso giusto. Noi usiamo il Low-Code/No-Code.' },
                       { title: 'Non sei disposto a investire su te stesso', desc: 'Se non sei pronto a investire per acquisire una competenza che può farti guadagnare migliaia di euro, non sei pronto.' }
                   ].map((item, idx) => (
