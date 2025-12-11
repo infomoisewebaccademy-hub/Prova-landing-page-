@@ -107,6 +107,14 @@ export interface LandingPageConfig {
       steps: Array<{ title: string; desc: string; icon: string }>;
       is_visible: boolean;
   };
+  // NUOVA SEZIONE: AI Showcase (Siti Esempio)
+  ai_showcase_section?: {
+      title: string;
+      subtitle: string;
+      text: string;
+      urls: string[];
+      is_visible: boolean;
+  };
   // NUOVA SEZIONE 7: Per Chi È (Target)
   for_whom_section?: {
       title: string;

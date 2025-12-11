@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { Course, UserProfile, LandingPageConfig } from '../types';
-import { CheckCircle, ArrowRight, ShieldCheck, Zap, Database, Layout, Target, Cpu, Layers, Users, Lock, Quote, Star, Award, Smartphone, MessageCircle, CheckCircle2, X, PlayCircle, BookOpen, MapPin, Phone, Mail, Facebook, Instagram, Linkedin, Youtube, CreditCard, Check, XCircle, Banknote, Rocket, TrendingUp, UserCheck, AlertTriangle, ChevronDown, ChevronUp, HelpCircle, Clock, Video, Image, Upload, Sparkles } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, Zap, Database, Layout, Target, Cpu, Layers, Users, Lock, Quote, Star, Award, Smartphone, MessageCircle, CheckCircle2, X, PlayCircle, BookOpen, MapPin, Phone, Mail, Facebook, Instagram, Linkedin, Youtube, CreditCard, Check, XCircle, Banknote, Rocket, TrendingUp, UserCheck, AlertTriangle, ChevronDown, ChevronUp, HelpCircle, Clock, Video, Image, Upload, Sparkles, Monitor } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface HomeProps {
@@ -111,6 +111,21 @@ const DEFAULT_CONFIG: LandingPageConfig = {
               desc: "Offri i tuoi servizi ad aziende locali (1 sito = €1.000-5.000) oppure lancia i tuoi progetti digitali. Nel 2025 ogni business ha bisogno di presenza online, e tu sai esattamente come dargliela.",
               icon: 'Banknote'
           }
+      ]
+  },
+  ai_showcase_section: {
+      title: 'Cosa Può Creare l’Intelligenza Artificiale per Te',
+      subtitle: 'Potenza Creativa Senza Limiti',
+      text: "L'AI non è solo uno strumento di scrittura. Oggi, con le competenze che ti insegniamo, puoi generare interfacce complete, backend scalabili e design mozzafiato in tempo reale.\n\nDal semplice sito vetrina a piattaforme complesse con login e database, passando per e-commerce e landing page ad alta conversione. Tutto questo ottimizzato tecnicamente e pronto per il mercato, senza scrivere codice manualmente e senza spendere mesi di sviluppo.",
+      is_visible: true,
+      urls: [
+          "https://studioskinlounge.aura.build/",
+          "https://flowfund-fintech-10.aura.build/",
+          "https://glowmist-skincare-9.aura.build/",
+          "https://conscious-dance-68.aura.build/",
+          "https://gym-fitness-club-47.aura.build/",
+          "https://newbox-designer.aura.build/",
+          "https://architectu-interior-38.aura.build/"
       ]
   },
   comparison_section: {
@@ -321,6 +336,10 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
         how_it_works_section: {
             ...DEFAULT_CONFIG.how_it_works_section,
             ...(landingConfig.how_it_works_section || {})
+        },
+        ai_showcase_section: {
+            ...DEFAULT_CONFIG.ai_showcase_section,
+            ...(landingConfig.ai_showcase_section || {})
         },
         comparison_section: {
             ...DEFAULT_CONFIG.comparison_section,
@@ -536,14 +555,14 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                                />
                                {/* Gradient Overlay on Video */}
                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
-                               <div className="absolute bottom-6 left-6 right-6">
+                               <div className="absolute bottom-2 left-3 right-3">
                                    <div className="bg-black/60 backdrop-blur-md p-4 rounded-xl border border-white/10">
                                        <div className="flex items-center gap-3 mb-2">
-                                           <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse"></div>
-                                           <span className="text-xs text-green-400 font-mono">AI GENERATION ACTIVE</span>
+                                           <div className="h-2 w-2 rounded-full bg-brand-400 animate-pulse"></div>
+                                           <span className="text-xs text-brand-400 font-mono uppercase">IL TUO SUCCESSO</span>
                                        </div>
                                        <p className="text-sm text-slate-200">
-                                           Generazione di interfacce complesse e backend scalabili in tempo reale.
+                                           Diventa un professionista ricercato.
                                        </p>
                                    </div>
                                </div>
@@ -801,6 +820,100 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
           </section>
       )}
 
+      {/* --- NEW SECTION: AI SHOWCASE (WEB SCROLLING CAROUSEL) --- */}
+      {config.ai_showcase_section?.is_visible !== false && (
+          <section className="py-24 bg-slate-950 border-t border-white/5 relative overflow-hidden">
+              <style>{`
+                  @keyframes marquee-scroll {
+                      0% { transform: translateX(0); }
+                      100% { transform: translateX(-50%); }
+                  }
+                  .animate-marquee-scroll {
+                      animation: marquee-scroll 60s linear infinite;
+                  }
+                  .animate-marquee-scroll:hover {
+                      animation-play-state: paused;
+                  }
+              `}</style>
+              
+              <div className="max-w-7xl mx-auto px-6 mb-16">
+                  <div className="grid lg:grid-cols-12 gap-16 items-center">
+                      <div className="lg:col-span-5">
+                          <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium text-brand-300 bg-brand-500/10 ring-1 ring-brand-500/20 rounded-full mb-8">
+                              <Monitor className="h-3 w-3" />
+                              Showcase
+                          </div>
+                          <h2 className="text-4xl lg:text-5xl font-semibold text-white mb-6 tracking-tight leading-tight">
+                              {config.ai_showcase_section?.title}
+                          </h2>
+                          <p className="text-xl text-slate-400 leading-relaxed mb-12 whitespace-pre-wrap">
+                              {config.ai_showcase_section?.text}
+                          </p>
+                      </div>
+                      
+                      {/* Description Panel */}
+                      <div className="lg:col-span-7">
+                          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-sm">
+                              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                  <Sparkles className="h-5 w-5 text-brand-400" />
+                                  Potenziale Illimitato
+                              </h3>
+                              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {[
+                                      "Creazione siti web professionali", "Landing page personalizzate", 
+                                      "Piattaforme complesse & Portali", "E-commerce & Membership",
+                                      "Automazioni & Ottimizzazioni", "Design Responsivi Moderni"
+                                  ].map((item, idx) => (
+                                      <li key={idx} className="flex items-center text-slate-300 text-sm">
+                                          <div className="h-1.5 w-1.5 rounded-full bg-brand-500 mr-3 shadow-[0_0_5px_#3b82f6]"></div>
+                                          {item}
+                                      </li>
+                                  ))}
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              {/* Scrolling Carousel of Live Previews */}
+              <div className="w-full relative">
+                  <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none"></div>
+                  <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none"></div>
+                  
+                  <div className="flex animate-marquee-scroll w-fit">
+                      {/* Duplichiamo la lista per l'effetto infinito */}
+                      {[...(config.ai_showcase_section?.urls || []), ...(config.ai_showcase_section?.urls || [])].map((url, idx) => (
+                          <div key={idx} className="w-[400px] h-[250px] mx-4 relative group flex-shrink-0">
+                              <div className="absolute inset-0 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-2xl transition-transform duration-300 group-hover:scale-105 group-hover:border-brand-500/50">
+                                  {/* Browser Bar */}
+                                  <div className="h-6 bg-slate-900 border-b border-white/5 flex items-center px-3 gap-1.5">
+                                      <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
+                                      <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
+                                      <div className="w-2 h-2 rounded-full bg-green-500/50"></div>
+                                  </div>
+                                  {/* Iframe Preview Container */}
+                                  <div className="w-full h-full relative bg-white">
+                                      {/* Overlay trasparente per evitare interazioni scroll indesiderate */}
+                                      <a href={url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-20 cursor-pointer block" title="Apri anteprima sito"></a>
+                                      
+                                      {/* Scaled Iframe */}
+                                      <div className="w-[1600px] h-[1000px] origin-top-left transform scale-25">
+                                          <iframe 
+                                              src={url} 
+                                              className="w-full h-full border-none pointer-events-none"
+                                              loading="lazy"
+                                              title={`Preview ${idx}`}
+                                          ></iframe>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+          </section>
+      )}
+
       {/* --- TARGET SECTION (Video Integration: Uomo Affari) --- */}
       <section className="py-24 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-6">
@@ -838,17 +951,15 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-90"></div>
                         
-                        <div className="absolute bottom-8 left-8 right-8">
-                            <div className="bg-slate-900/80 backdrop-blur p-6 rounded-2xl border border-white/10">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold text-xl">
-                                        €
-                                    </div>
-                                    <div>
-                                        <p className="text-white font-bold text-lg">Il Tuo Successo</p>
-                                        <p className="text-slate-400 text-sm">Diventa un professionista ricercato.</p>
-                                    </div>
+                        <div className="absolute bottom-2 left-3 right-3">
+                            <div className="bg-black/60 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="h-2 w-2 rounded-full bg-brand-400 animate-pulse"></div>
+                                    <span className="text-xs text-brand-400 font-mono uppercase">IL TUO SUCCESSO</span>
                                 </div>
+                                <p className="text-sm text-slate-200">
+                                    Diventa un professionista ricercato.
+                                </p>
                             </div>
                         </div>
                   </div>

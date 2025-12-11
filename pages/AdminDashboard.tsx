@@ -109,6 +109,21 @@ const DEFAULT_LANDING_CONFIG: LandingPageConfig = {
           }
       ]
   },
+  ai_showcase_section: {
+      title: 'Cosa Può Creare l’Intelligenza Artificiale per Te',
+      subtitle: 'Potenza Creativa Senza Limiti',
+      text: "L'AI non è solo uno strumento di scrittura. Oggi, con le competenze che ti insegniamo, puoi generare interfacce complete, backend scalabili e design mozzafiato in tempo reale.\n\nDal semplice sito vetrina a piattaforme complesse con login e database, passando per e-commerce e landing page ad alta conversione. Tutto questo ottimizzato tecnicamente e pronto per il mercato, senza scrivere codice manualmente e senza spendere mesi di sviluppo.",
+      is_visible: true,
+      urls: [
+          "https://studioskinlounge.aura.build/",
+          "https://flowfund-fintech-10.aura.build/",
+          "https://glowmist-skincare-9.aura.build/",
+          "https://conscious-dance-68.aura.build/",
+          "https://gym-fitness-club-47.aura.build/",
+          "https://newbox-designer.aura.build/",
+          "https://architectu-interior-38.aura.build/"
+      ]
+  },
   for_whom_section: {
       title: 'Moise Web Academy È Perfetto Per Te Se...',
       is_visible: true,
@@ -293,6 +308,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, user, o
           how_it_works_section: {
               ...DEFAULT_LANDING_CONFIG.how_it_works_section,
               ...(dbConfig.how_it_works_section || {})
+          },
+          ai_showcase_section: {
+              ...DEFAULT_LANDING_CONFIG.ai_showcase_section,
+              ...(dbConfig.ai_showcase_section || {}),
+              urls: dbConfig.ai_showcase_section?.urls || DEFAULT_LANDING_CONFIG.ai_showcase_section?.urls
           },
           for_whom_section: {
               ...DEFAULT_LANDING_CONFIG.for_whom_section,
