@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Course, UserProfile, LandingPageConfig } from '../types';
-import { CheckCircle, ArrowRight, ShieldCheck, Zap, Database, Layout, Target, Cpu, Layers, Users, Lock, Quote, Star, Award, Smartphone, MessageCircle, CheckCircle2, X, PlayCircle, BookOpen, MapPin, Phone, Mail, Facebook, Instagram, Linkedin, Youtube, CreditCard, Check, XCircle, Banknote, Rocket, TrendingUp, UserCheck, AlertTriangle, ChevronDown, ChevronUp, HelpCircle, Clock, Video, Image, Upload, Sparkles, Monitor, Loader2 } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, Zap, Database, Layout, Target, Cpu, Layers, Users, Lock, Quote, Star, Award, Smartphone, MessageCircle, CheckCircle2, X, PlayCircle, BookOpen, MapPin, Phone, Mail, Facebook, Instagram, Linkedin, Youtube, CreditCard, Check, XCircle, Banknote, Rocket, TrendingUp, UserCheck, AlertTriangle, ChevronDown, ChevronUp, HelpCircle, Clock, Video, Image, Upload, Sparkles, Monitor, Loader2, ExternalLink, MoveHorizontal, Laptop } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface HomeProps {
@@ -14,67 +14,76 @@ interface HomeProps {
 
 // --- COMPONENTI INTERNI OTTIMIZZATI ---
 
-const WebsiteCard: React.FC<{ url: string; index: number }> = ({ url, index }) => {
+const WebsiteCard: React.FC<{ url: string; index: number; isMobileView: boolean }> = ({ url, index, isMobileView }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isVisible, setIsVisible] = useState(false);
-    const [isInteracting, setIsInteracting] = useState(false); // Hover or Touch
+    const [isInteracting, setIsInteracting] = useState(false);
+    const [scale, setScale] = useState(1);
     
     const containerRef = useRef<HTMLDivElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const animationRef = useRef<number>(0);
     
-    // Configurazione Direzione: 
-    // index pari (0, 2...) => Parte dall'alto, scorre GIÙ (1)
-    // index dispari (1, 3...) => Parte dal basso, scorre SU (-1)
+    // CONFIGURAZIONE RESPONSIVE
+    // Desktop: Simula un Laptop (1280px)
+    // Mobile: Simula uno Smartphone (375px)
+    const TARGET_WIDTH = isMobileView ? 375 : 1280; 
+    const VIRTUAL_HEIGHT = 5000;       
+    const BASE_SPEED = 0.6;            
+
+    // Configurazione Direzione Verticale: index pari = GIÙ, dispari = SU
     const directionRef = useRef<number>(index % 2 === 0 ? 1 : -1);
-    const speed = 0.6; // Velocità in px per frame (60fps)
 
-    // 1. Intersection Observer (Ottimizzazione Performance)
+    // 1. Calcolo Scala Dinamico
     useEffect(() => {
+        const handleResize = () => {
+            if (!containerRef.current) return;
+            const containerWidth = containerRef.current.clientWidth;
+            // Calcola la scala basandosi sulla larghezza del contenitore (che è la "schermo" del device simulato)
+            const newScale = containerWidth / TARGET_WIDTH;
+            setScale(newScale);
+        };
+
+        handleResize();
+        // Un piccolo delay per assicurarsi che il DOM sia pronto
+        setTimeout(handleResize, 100);
+        
+        window.addEventListener('resize', handleResize);
+        
         const observer = new IntersectionObserver(
-            ([entry]) => {
-                setIsVisible(entry.isIntersecting);
-            },
-            { threshold: 0.1 } 
+            ([entry]) => setIsVisible(entry.isIntersecting),
+            { threshold: 0.1 }
         );
+        if (containerRef.current) observer.observe(containerRef.current);
 
-        if (containerRef.current) {
-            observer.observe(containerRef.current);
-        }
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            observer.disconnect();
+        };
+    }, [TARGET_WIDTH, isMobileView]);
 
-        return () => observer.disconnect();
-    }, []);
-
-    // 2. Inizializzazione Posizione (Per i dispari che partono dal basso)
+    // 2. Posizionamento Iniziale Scroll Verticale
     useEffect(() => {
-        if (!isLoading && scrollRef.current && index % 2 !== 0) {
-            const el = scrollRef.current;
-            // Imposta lo scroll alla fine meno l'altezza visibile
-            el.scrollTop = el.scrollHeight - el.clientHeight;
+        if (!isLoading && scrollRef.current && directionRef.current === -1) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight - scrollRef.current.clientHeight;
         }
-    }, [isLoading, index]);
+    }, [isLoading]);
 
-    // 3. Animation Loop (JS Based per controllo totale)
+    // 3. Animation Loop Verticale (Interno al sito)
     useEffect(() => {
         const animate = () => {
             if (isVisible && !isInteracting && !isLoading && scrollRef.current) {
                 const el = scrollRef.current;
                 const maxScroll = el.scrollHeight - el.clientHeight;
                 
-                // Calcolo nuova posizione
-                let newScrollTop = el.scrollTop + (speed * directionRef.current);
+                let newScrollTop = el.scrollTop + (BASE_SPEED * directionRef.current);
 
-                // Logica Rimbalzo / Loop
-                if (directionRef.current === 1) { // Scende
-                    if (newScrollTop >= maxScroll) {
-                        directionRef.current = -1; // Inverti verso l'alto
-                        newScrollTop = maxScroll; 
-                    }
-                } else { // Sale
-                    if (newScrollTop <= 0) {
-                        directionRef.current = 1; // Inverti verso il basso
-                        newScrollTop = 0;
-                    }
+                if (newScrollTop >= maxScroll) {
+                    newScrollTop = maxScroll;
+                    directionRef.current = -1; 
+                } else if (newScrollTop <= 0) {
+                    newScrollTop = 0;
+                    directionRef.current = 1; 
                 }
 
                 el.scrollTop = newScrollTop;
@@ -86,83 +95,141 @@ const WebsiteCard: React.FC<{ url: string; index: number }> = ({ url, index }) =
         return () => cancelAnimationFrame(animationRef.current!);
     }, [isVisible, isInteracting, isLoading]);
 
+    // Render Laptop Frame (Desktop)
+    if (!isMobileView) {
+        return (
+            <div 
+                className="w-[500px] h-[330px] relative group flex-shrink-0 mx-6 perspective-1000"
+                onMouseEnter={() => setIsInteracting(true)}
+                onMouseLeave={() => setIsInteracting(false)}
+                onTouchStart={() => setIsInteracting(true)}
+                onTouchEnd={() => setIsInteracting(false)}
+            >
+                {/* Laptop Top (Screen) */}
+                <div className="absolute inset-x-0 top-0 bottom-4 bg-gray-800 rounded-t-xl rounded-b-md border-[3px] border-gray-700 shadow-2xl flex flex-col overflow-hidden ring-1 ring-white/10">
+                    
+                    {/* Webcam & Bezel */}
+                    <div className="h-6 bg-gray-900 flex justify-center items-center relative z-20 shrink-0">
+                        <div className="w-1.5 h-1.5 bg-black rounded-full ring-1 ring-gray-700"></div>
+                        <div className="absolute left-3 top-1.5 flex gap-1.5 opacity-50 hover:opacity-100 transition-opacity">
+                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                            <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                        </div>
+                    </div>
+
+                    {/* Screen Container */}
+                    <div ref={containerRef} className="relative flex-1 bg-white w-full overflow-hidden">
+                        {isLoading && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-30">
+                                <Loader2 className="h-8 w-8 text-brand-600 animate-spin mb-2" />
+                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Caricamento Desktop...</span>
+                            </div>
+                        )}
+                        
+                        {/* Scaled Content */}
+                        <div 
+                            style={{
+                                width: TARGET_WIDTH,
+                                height: `calc(100% / ${scale})`,
+                                transform: `scale(${scale})`,
+                                transformOrigin: 'top left',
+                            }}
+                            className="absolute top-0 left-0 bg-white"
+                        >
+                            <div 
+                                ref={scrollRef}
+                                className="w-full h-full overflow-y-auto scrollbar-hide"
+                                style={{ scrollBehavior: 'auto', overscrollBehavior: 'contain' }} 
+                            >
+                                <div style={{ height: VIRTUAL_HEIGHT }} className="w-full relative">
+                                    <iframe 
+                                        src={url} 
+                                        className="w-full h-full border-none pointer-events-none block" 
+                                        loading="lazy"
+                                        scrolling="no"
+                                        onLoad={() => setIsLoading(false)}
+                                        title="Desktop Preview"
+                                        sandbox="allow-scripts allow-same-origin"
+                                    ></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Laptop Base (Bottom) */}
+                <div className="absolute bottom-0 inset-x-[-20px] h-4 bg-gray-300 rounded-b-xl rounded-t-sm shadow-xl flex items-center justify-center border-t border-gray-400/50 gradient-to-b from-gray-200 to-gray-400">
+                    <div className="w-20 h-1.5 bg-gray-400/30 rounded-full"></div>
+                </div>
+                
+                <a href={url} target="_blank" rel="noopener noreferrer" className="absolute top-3 right-3 z-30 text-slate-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100 p-2 bg-black/50 rounded-full backdrop-blur-sm">
+                    <ExternalLink className="h-4 w-4" />
+                </a>
+            </div>
+        );
+    }
+
+    // Render Phone Frame (Mobile)
     return (
         <div 
             ref={containerRef}
-            className="w-[280px] h-[180px] sm:w-[400px] sm:h-[250px] mx-3 sm:mx-4 relative group flex-shrink-0 perspective-1000 cursor-grab active:cursor-grabbing"
+            className="w-[260px] h-[480px] relative group flex-shrink-0 rounded-[2.5rem] border-[6px] border-slate-800 bg-slate-900 shadow-2xl overflow-hidden transform transition-transform duration-300 hover:scale-[1.01] mx-4"
             onMouseEnter={() => setIsInteracting(true)}
             onMouseLeave={() => setIsInteracting(false)}
             onTouchStart={() => setIsInteracting(true)}
             onTouchEnd={() => setIsInteracting(false)}
         >
-            <div className="absolute inset-0 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:border-brand-500/50 hover:shadow-brand-500/10">
-                
-                {/* Browser Bar */}
-                <div className="h-6 bg-slate-900 border-b border-white/5 flex items-center px-3 gap-1.5 z-20 relative pointer-events-none">
-                    <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
-                    <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
-                    <div className="w-2 h-2 rounded-full bg-green-500/50"></div>
-                    <div className="ml-2 w-full h-3 bg-slate-800 rounded-full opacity-30 flex items-center justify-center">
-                         {/* Indicatore visivo di pausa */}
-                         {isInteracting && <div className="w-1 h-1 bg-brand-500 rounded-full animate-pulse"></div>}
+            {/* Notch */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-slate-800 rounded-b-xl z-20 flex justify-center items-center">
+                <div className="w-10 h-1 bg-slate-700 rounded-full"></div>
+            </div>
+
+            <div className="w-full h-full bg-white relative overflow-hidden rounded-[2rem]">
+                {isLoading && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-30">
+                        <Loader2 className="h-8 w-8 text-brand-600 animate-spin mb-2" />
+                        <span className="text-[10px] text-slate-400 font-bold uppercase">Caricamento Mobile...</span>
+                    </div>
+                )}
+
+                <div 
+                    style={{
+                        width: TARGET_WIDTH,
+                        height: `calc(100% / ${scale})`,
+                        transform: `scale(${scale})`,
+                        transformOrigin: 'top left',
+                    }}
+                    className="absolute top-0 left-0 bg-white"
+                >
+                    <div 
+                        ref={scrollRef}
+                        className="w-full h-full overflow-y-auto scrollbar-hide"
+                        style={{ scrollBehavior: 'auto', overscrollBehavior: 'contain' }} 
+                    >
+                        <div style={{ height: VIRTUAL_HEIGHT }} className="w-full relative">
+                            <iframe 
+                                src={url} 
+                                className="w-full h-full border-none pointer-events-none block" 
+                                loading="lazy"
+                                scrolling="no"
+                                onLoad={() => setIsLoading(false)}
+                                title="Mobile Preview"
+                                sandbox="allow-scripts allow-same-origin"
+                            ></iframe>
+                        </div>
                     </div>
                 </div>
 
-                {/* Viewport Container */}
-                <div className="w-full h-full relative bg-slate-900">
-                    
-                    {/* Skeleton Loader */}
-                    {isLoading && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800 z-10">
-                            <Loader2 className="h-8 w-8 text-brand-500 animate-spin mb-2" />
-                            <span className="text-xs text-slate-500 font-mono">Loading Preview...</span>
-                        </div>
-                    )}
-
-                    {/* Wrapper Desktop Simulato (1280px width) */}
-                    <div className="w-[1280px] h-[800px] origin-top-left absolute top-0 left-0 bg-white transform scale-[0.218] sm:scale-[0.3125] pointer-events-auto"> 
-                        
-                        {/* 
-                           SCROLLING CONTAINER REALE
-                           overflow-y-auto permette lo scroll manuale nativo.
-                           La ref 'scrollRef' viene manipolata da JS per l'autoscroll.
-                        */}
-                        <div 
-                            ref={scrollRef}
-                            className="w-full h-full overflow-y-auto scrollbar-hide scroll-smooth"
-                            style={{ scrollBehavior: isInteracting ? 'auto' : 'auto' }} // 'auto' per JS scroll immediato, 'smooth' potrebbe laggare nel loop
-                        >
-                            {/* IFRAME TALL CONTAINER */}
-                            {/* Impostiamo altezza iframe molto alta per simulare pagina lunga e permettere scroll */}
-                            <div className="w-full h-[4500px]"> 
-                                <iframe 
-                                    src={url} 
-                                    className="w-full h-full border-none pointer-events-none" // pointer-events-none sull'iframe per permettere drag sul div padre
-                                    loading="lazy"
-                                    scrolling="no"
-                                    onLoad={() => setIsLoading(false)}
-                                    title="Live Preview"
-                                ></iframe>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Overlay Trasparente per Link (Solo Header cliccabile o pulsante esterno se necessario) */}
-                    {/* Nota: Qui permettiamo l'interazione diretta col div per lo scroll manuale, quindi l'overlay totale bloccherebbe lo scroll */}
-                    <a 
-                        href={url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="absolute top-0 left-0 right-0 h-8 z-30 cursor-pointer" 
-                        title="Apri sito reale"
-                    ></a>
-                </div>
+                <a href={url} target="_blank" rel="noopener noreferrer" className="absolute bottom-4 right-4 z-20 bg-black/80 text-white p-2 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ExternalLink className="h-4 w-4" />
+                </a>
             </div>
         </div>
     );
 };
 
-// DEFAULT CONFIGURATION (Contenuto esatto dell'immagine)
+// ... (DEFAULT_CONFIG, IconMap, FAQ_ITEMS restano invariati) ...
 const DEFAULT_CONFIG: LandingPageConfig = {
   announcement_bar: {
     text: '🎉 Offerta lancio: Tutti i corsi al 50% di sconto per i primi 100 iscritti!',
@@ -356,7 +423,6 @@ const DEFAULT_CONFIG: LandingPageConfig = {
   }
 };
 
-// Helper per mappare stringhe icona a componenti Lucide
 const IconMap: Record<string, React.ElementType> = {
   Cpu, Layout, Zap, Target, ShieldCheck, Database, Layers, Users, Lock, Star, Award, Smartphone, 
   BookOpen, Rocket, Banknote, TrendingUp
@@ -446,9 +512,24 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewForm, setReviewForm] = useState({ name: '', text: '', rating: 5 });
 
+  // Showcase Slider Ref
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
+
+  // Detect Mobile/Desktop
+  useEffect(() => {
+      const checkMobile = () => {
+          setIsMobileView(window.innerWidth < 1024); // Consider tablets/desktop as "Desktop view" for showcase
+      };
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Merge config with defaults
   const config = useMemo(() => {
@@ -543,6 +624,27 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
       if (!url) return false;
       return url.includes('youtube') || url.includes('youtu.be') || url.includes('vimeo') || url.endsWith('.mp4') || url.endsWith('.webm');
   };
+
+  // Auto-scroll orizzontale
+  useEffect(() => {
+      let animationId: number;
+      const scrollSpeed = 0.5; // Velocità ridotta per leggibilità
+
+      const scroll = () => {
+          if (sliderRef.current && !isPaused) {
+              sliderRef.current.scrollLeft += scrollSpeed;
+              
+              // Infinite Loop Logic: Resetta la posizione quando arriva a metà contenuto (grazie alla duplicazione)
+              if (sliderRef.current.scrollLeft >= (sliderRef.current.scrollWidth / 2)) {
+                  sliderRef.current.scrollLeft = 0;
+              }
+          }
+          animationId = requestAnimationFrame(scroll);
+      };
+
+      animationId = requestAnimationFrame(scroll);
+      return () => cancelAnimationFrame(animationId);
+  }, [isPaused]);
 
   return (
     <div className="flex flex-col min-h-screen font-sans antialiased text-slate-100 bg-slate-950 selection:bg-brand-500/30">
@@ -970,22 +1072,9 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
           </section>
       )}
 
-      {/* --- NEW SECTION: AI SHOWCASE (WEB SCROLLING CAROUSEL) --- */}
+      {/* --- AI SHOWCASE (Horizontal Slider Ibrido) --- */}
       {config.ai_showcase_section?.is_visible !== false && (
           <section className="py-24 bg-slate-950 border-t border-white/5 relative overflow-hidden">
-              <style>{`
-                  @keyframes marquee-scroll {
-                      0% { transform: translateX(0); }
-                      100% { transform: translateX(-50%); }
-                  }
-                  .animate-marquee-scroll {
-                      animation: marquee-scroll 60s linear infinite;
-                  }
-                  .animate-marquee-scroll:hover {
-                      animation-play-state: paused;
-                  }
-              `}</style>
-              
               <div className="max-w-7xl mx-auto px-6 mb-16">
                   <div className="grid lg:grid-cols-12 gap-16 items-center">
                       <div className="lg:col-span-5">
@@ -999,6 +1088,15 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                           <p className="text-xl text-slate-400 leading-relaxed mb-12 whitespace-pre-wrap">
                               {config.ai_showcase_section?.text}
                           </p>
+                          
+                          <div className="flex items-center gap-2 text-brand-400 text-sm font-bold animate-pulse">
+                              <MoveHorizontal className="h-5 w-5" /> Scorri per esplorare
+                          </div>
+                          {!isMobileView && (
+                              <div className="mt-2 flex items-center gap-2 text-slate-500 text-xs font-mono">
+                                  <Laptop className="h-4 w-4" /> Modalità Desktop Attiva
+                              </div>
+                          )}
                       </div>
                       
                       {/* Description Panel */}
@@ -1025,15 +1123,29 @@ export const Home: React.FC<HomeProps> = ({ courses, onCourseSelect, user, landi
                   </div>
               </div>
 
-              {/* Scrolling Carousel of Live Previews */}
-              <div className="w-full relative">
-                  <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-32 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none"></div>
-                  <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-32 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none"></div>
+              {/* Slider Orizzontale Ibrido (Auto + Manual) */}
+              <div 
+                  className="w-full relative group"
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
+                  onTouchStart={() => setIsPaused(true)}
+                  onTouchEnd={() => setIsPaused(false)}
+              >
+                  {/* Fade Edges */}
+                  <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-24 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none"></div>
+                  <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-24 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none"></div>
                   
-                  <div className="flex animate-marquee-scroll w-fit">
-                      {/* Duplichiamo la lista per l'effetto infinito */}
-                      {[...(config.ai_showcase_section?.urls || []), ...(config.ai_showcase_section?.urls || [])].map((url, idx) => (
-                          <WebsiteCard key={`${url}-${idx}`} url={url} index={idx} />
+                  <div 
+                      ref={sliderRef}
+                      className="flex gap-6 sm:gap-10 overflow-x-auto px-6 sm:px-24 pb-12 scrollbar-hide cursor-grab active:cursor-grabbing"
+                  >
+                      {/* Tripla duplicazione per loop infinito fluido */}
+                      {[
+                          ...(config.ai_showcase_section?.urls || []), 
+                          ...(config.ai_showcase_section?.urls || []), 
+                          ...(config.ai_showcase_section?.urls || [])
+                      ].map((url, idx) => (
+                          <WebsiteCard key={`${url}-${idx}`} url={url} index={idx} isMobileView={isMobileView} />
                       ))}
                   </div>
               </div>
